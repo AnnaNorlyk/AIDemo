@@ -1,30 +1,21 @@
-import React from 'react';
-import "./App.css";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Header from "./HeaderComponent";
+import MainSection from "./MainSection";
+import LoginPage from "./LoginPage";
+import OpretPage from "./OpretPage";
 
-
-import ImageRecognizerComponent1 from './ImageRecognizerComponent1'
-import ImageRecognizerComponent2 from './ImageRecognizerComponent2'
-import ImageRecognizerComponent3 from './ImageRecognizerComponent3'
-import ImageRecognizerComponent4 from './ImageRecognizerComponent4'
-import ImageRecognizerComponent5 from './ImageRecognizerComponent5'
-function App() {
+const App = () => {
   return (
-    <div className="app-container">
-      <h1>Billedegenkendelse</h1>
-      <table>
-        <tbody>
-          <tr>
-            <td><ImageRecognizerComponent1 /></td>
-            <td><ImageRecognizerComponent2 /></td>
-            <td><ImageRecognizerComponent3 /></td>
-            <td><ImageRecognizerComponent4 /></td>
-            <td><ImageRecognizerComponent5 /></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <Router>
+      <Header />
+      <Routes>
+        <Route path="/" element={<MainSection />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/opret" element={<OpretPage />} />
+      </Routes>
+    </Router>
   );
-}
-
+};
 
 export default App;
