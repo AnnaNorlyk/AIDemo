@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Header from "./HeaderComponent";
-import MainSection from "./MainSection";
-import LoginPage from "./LoginPage";
-import OpretPage from "./OpretPage";
+import Header from "./View/Components/HeaderComponent";
+import MainSection from "./View/Components/MainSection";
+import LoginPage from "./View/Pages/LoginPage";
+import OpretPage from "./View/Pages/OpretPage";
 
 const App = () => {
   return (
