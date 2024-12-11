@@ -1,51 +1,43 @@
 import React, { useState, useEffect } from "react";
 import EventCard from "./EventCard";
+import { EventData } from "../../Model/IEventData";
 
-interface Event {
-  eventId: number;
-  eventName: string;
-  eventDescription?: string;
-  eventCategory?: string;
-  eventStart: string;
-  eventEnd: string;
-  eventStatus: string;
-  eventCreationTimestamp: string; // Keeping as string since it's likely in ISO format
-}
 
 const MainSection: React.FC = () => {
-  const [events, setEvents] = useState<Event[]>([]); // State to store events
-  const [searchQuery, setSearchQuery] = useState<string>(""); // State for search input
-  const [sortOption, setSortOption] = useState<string>("date"); // State for sorting
-  const [error, setError] = useState<string | null>(null); // State for errors
-  const [isLoading, setIsLoading] = useState<boolean>(true); // State to track loading
+  const [events, setEvents] = useState<EventData[]>([]); 
+  const [searchQuery, setSearchQuery] = useState<string>(""); 
+  const [sortOption, setSortOption] = useState<string>("start");
+  const [error, setError] = useState<string | null>(null); 
+  const [isLoading, setIsLoading] = useState<boolean>(true); 
 
   // Fetch events from the API
   useEffect(() => {
     const fetchApprovedEvents = async () => {
-        try {
-            const response = await fetch("/api/events/approved");
-            if (!response.ok) {
-                throw new Error("Failed to fetch events");
-            }
-            const data = await response.json();
-            setEvents(data);
-        } catch (err) {
-            console.error("Error fetching events:", err);
-            setError("Unable to load events. Please try again later.");
+      try {
+        const response = await fetch("/api/events/approved");
+        if (!response.ok) {
+          throw new Error("Failed to fetch events");
         }
+        const data = await response.json();
+        setEvents(data);
+      } catch (err) {
+        console.error("Error fetching events:", err);
+        setError("Unable to load events. Please try again later.");
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchApprovedEvents();
-}, []);
-
+  }, []);
 
   // Handle sorting of events
-  const handleSort = (events: Event[]) => {
+  const handleSort = (events: EventData[]) => {
     switch (sortOption) {
       case "name":
-        return [...events].sort((a, b) => a.eventName.localeCompare(b.eventName));
+        return [...events].sort((a, b) => (a.eventName || "").localeCompare(b.eventName || ""));
       case "start":
-        return [...events].sort((a, b) => new Date(a.eventStart).getTime() - new Date(b.eventStart).getTime());
+        return [...events].sort((a, b) => new Date(a.eventStart || "").getTime() - new Date(b.eventStart || "").getTime());
       case "category":
         return [...events].sort((a, b) => (a.eventCategory || "").localeCompare(b.eventCategory || ""));
       default:
@@ -57,7 +49,7 @@ const MainSection: React.FC = () => {
   const filteredEvents = handleSort(
     events.filter(
       (event) =>
-        event.eventName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (event.eventName || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
         (event.eventCategory || "").toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
@@ -98,11 +90,7 @@ const MainSection: React.FC = () => {
           filteredEvents.map((event) => (
             <EventCard
               key={event.eventId}
-              image="https://via.placeholder.com/150" // Replace with actual image property if exists
-              title={event.eventName}
-              timeSpan={`${event.eventStart} - ${event.eventEnd}`}
-              date={new Date(event.eventStart).toLocaleDateString()}
-              location={event.eventCategory || "Ukendt Kategori"}
+              event={event} // Pass the event object directly
             />
           ))
         ) : (
